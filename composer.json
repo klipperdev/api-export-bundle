@@ -1,0 +1,30 @@
+{
+    "name": "klipper/api-export-bundle",
+    "type": "symfony-bundle",
+    "description": "API Export bundle of Klipper",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "François Pluchino",
+            "email": "francois.pluchino@klipper.dev"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": "^7.4.0",
+        "klipper/api-bundle": "^2.0.0",
+        "phpoffice/export-bundle": "^1.15.0"
+    },
+    "autoload": {
+        "psr-4": { "Klipper\\Bundle\\ApiExportBundle\\": "" },
+        "exclude-from-classmap": [
+            "**/Tests/"
+        ]
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.0-dev"
+        }
+    }
+}
