@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Klipper\Bundle\ApiSearchBundle;
+namespace Klipper\Bundle\ApiExportBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
