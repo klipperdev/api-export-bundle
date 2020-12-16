@@ -11,6 +11,8 @@
 
 namespace Klipper\Bundle\ApiExportBundle;
 
+use Klipper\Bundle\ApiExportBundle\DependencyInjection\Compiler\ViewTransformerPass;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
@@ -18,4 +20,10 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  */
 class KlipperApiExportBundle extends Bundle
 {
+    public function build(ContainerBuilder $container): void
+    {
+        parent::build($container);
+
+        $container->addCompilerPass(new ViewTransformerPass());
+    }
 }
