@@ -14,6 +14,7 @@ namespace Klipper\Bundle\ApiExportBundle\Controller;
 use Doctrine\ORM\QueryBuilder;
 use Klipper\Bundle\ApiBundle\Controller\ControllerHelper;
 use Klipper\Bundle\ApiBundle\View\Transformer\PrePaginateViewTransformerInterface;
+use Klipper\Component\Export\Exception\ExportNotFoundException;
 use Klipper\Component\Export\Exception\InvalidFormatException;
 use Klipper\Component\Export\ExportManagerInterface;
 use Klipper\Component\Metadata\MetadataManagerInterface;
@@ -22,6 +23,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -77,6 +79,10 @@ class StandardController
         $fields = $request->headers->has('x-fields')
             ? $request->headers->get('x-fields')
             : $request->query->get('fields');
+        $headerType = $request->headers->has('x-header-type')
+            ? $request->headers->get('x-header-type')
+            : $request->query->get('header-type');
+        $headerLabels = !$headerType || 'label' === $headerType;
 
         if (!$helper->isGranted(new PermVote('view'), $class) || !$helper->isGranted(new PermVote('export'))) {
             throw $helper->createAccessDeniedException();
@@ -105,7 +111,7 @@ class StandardController
 
         try {
             $filename = $this->getExportFilename($translator->trans($meta->getPluralLabel(), [], 'entities'), $ext);
-            $exportedData = $exportManager->exportQuery($meta, $query, $this->getFields($fields), $ext);
+            $exportedData = $exportManager->exportQuery($meta, $query, $this->getFields($fields), $ext, $headerLabels);
             $writer = $exportedData->getWriter();
 
             $response = new StreamedResponse(
@@ -125,6 +131,8 @@ class StandardController
             throw new BadRequestHttpException($translator->trans('klipper_api_export.invalid_format', [
                 'format' => $ext,
             ], 'exceptions'), $e);
+        } catch (ExportNotFoundException $e) {
+            throw new NotFoundHttpException(null, $e);
         } catch (\Throwable $e) {
             throw new BadRequestHttpException($translator->trans('klipper_api_export.error', [], 'exceptions'), $e);
         }
@@ -142,6 +150,8 @@ class StandardController
      */
     private function getFields(?string $requestFields): array
     {
-        return array_map('trim', explode(',', $requestFields));
+        $fields = array_map('trim', explode(',', $requestFields));
+
+        return 1 === \count($fields) && empty($fields[0]) ? [] : $fields;
     }
 }
