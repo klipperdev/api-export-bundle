@@ -73,9 +73,6 @@ class StandardController
         $method = $request->attributes->get('_method_repository', $defaultRepoMethod);
         $alias = $request->attributes->get('_method_repository_alias', 'o');
         $indexBy = $request->attributes->get('_method_repository_index_by');
-        $querySortable = $request->headers->has('x-sort')
-            ? $request->headers->get('x-sort')
-            : $request->query->get('sort');
         $fields = $request->headers->has('x-fields')
             ? $request->headers->get('x-fields')
             : $request->query->get('fields');
@@ -86,16 +83,6 @@ class StandardController
 
         if (!$helper->isGranted(new PermVote('view'), $class) || !$helper->isGranted(new PermVote('export'))) {
             throw $helper->createAccessDeniedException();
-        }
-
-        if (empty($querySortable) && !empty($meta->getDefaultSortable())) {
-            $sort = [];
-
-            foreach ($meta->getDefaultSortable() as $field => $direction) {
-                $sort[] = $field.':'.$direction;
-            }
-
-            $request->headers->set('x-sort', implode(', ', $sort));
         }
 
         /** @var QueryBuilder $qb */
