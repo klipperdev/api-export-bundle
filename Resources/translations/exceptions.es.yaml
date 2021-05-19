@@ -1,0 +1,2 @@
+klipper_api_export.error: 'Imposible exportar los datos por causa de un error'
+klipper_api_export.invalid_format: 'El formato de exportación "{format}" no es válido'
