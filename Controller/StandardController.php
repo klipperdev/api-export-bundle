@@ -70,9 +70,9 @@ class StandardController
         $defaultRepoMethod = method_exists($repo, 'createTranslatedQueryBuilder')
             ? 'createTranslatedQueryBuilder'
             : 'createQueryBuilder';
-        $method = $request->attributes->get('_method_repository', $defaultRepoMethod);
-        $alias = $request->attributes->get('_method_repository_alias', 'o');
-        $indexBy = $request->attributes->get('_method_repository_index_by');
+        $method = $request->attributes->get('_repository_method', $defaultRepoMethod);
+        $alias = $request->attributes->get('_repository_method_alias', 'o');
+        $indexBy = $request->attributes->get('_repository_method_index_by');
         $fields = $request->headers->has('x-fields')
             ? $request->headers->get('x-fields')
             : $request->query->get('fields');
