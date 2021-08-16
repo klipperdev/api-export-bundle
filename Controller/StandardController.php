@@ -13,6 +13,7 @@ namespace Klipper\Bundle\ApiExportBundle\Controller;
 
 use Doctrine\ORM\QueryBuilder;
 use Klipper\Bundle\ApiBundle\Controller\ControllerHelper;
+use Klipper\Bundle\ApiBundle\Util\StandardControllerUtil;
 use Klipper\Bundle\ApiBundle\View\Transformer\PrePaginateViewTransformerInterface;
 use Klipper\Component\Export\Exception\ExportNotFoundException;
 use Klipper\Component\Export\Exception\InvalidFormatException;
@@ -67,9 +68,7 @@ class StandardController
         $class = $request->attributes->get('_action_class');
         $repo = $helper->getRepository($class);
         $meta = $metadataManager->get($class);
-        $defaultRepoMethod = method_exists($repo, 'createTranslatedQueryBuilder')
-            ? 'createTranslatedQueryBuilder'
-            : 'createQueryBuilder';
+        $defaultRepoMethod = StandardControllerUtil::findDefaultCreateQueryBuilderMethod($repo);
         $method = $request->attributes->get('_repository_method', $defaultRepoMethod);
         $alias = $request->attributes->get('_repository_method_alias', 'o');
         $indexBy = $request->attributes->get('_repository_method_index_by');
